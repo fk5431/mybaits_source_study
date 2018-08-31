@@ -26,6 +26,7 @@ public enum JdbcType {
   /*
    * This is added to enable basic support for the
    * ARRAY data type - but a custom type handler is still required
+   * 为了支持数组的数据类型 - 自定义的类型仍然需要处理
    */
   ARRAY(Types.ARRAY),
   BIT(Types.BIT),
@@ -69,7 +70,7 @@ public enum JdbcType {
 
   public final int TYPE_CODE;
   private static Map<Integer,JdbcType> codeLookup = new HashMap<>();
-
+  //一开始就把数字对应的枚举型放入hashmap
   static {
     for (JdbcType type : JdbcType.values()) {
       codeLookup.put(type.TYPE_CODE, type);

@@ -26,8 +26,9 @@ public final class LogFactory {
   /**
    * Marker to be used by logging implementations that support markers
    */
+  //给支持marker功能的logger使用(目前有slf4j, log4j2)
   public static final String MARKER = "MYBATIS";
-
+  //用哪个日志框架，这就是那个日志框架对应的logger的构造函数
   private static Constructor<? extends Log> logConstructor;
 
   static {
@@ -39,7 +40,7 @@ public final class LogFactory {
     tryImplementation(LogFactory::useNoLogging);
   }
 
-  private LogFactory() {
+  private LogFactory() {//单例
     // disable construction
   }
 

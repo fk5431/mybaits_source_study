@@ -15,30 +15,22 @@
  */
 package org.apache.ibatis.type;
 
+import org.apache.ibatis.io.ResolverUtil;
+import org.apache.ibatis.io.Resources;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.ibatis.io.ResolverUtil;
-import org.apache.ibatis.io.Resources;
+import java.util.*;
 
 /**
  * @author Clinton Begin
  */
+//类型别名注册机
 public class TypeAliasRegistry {
 
   private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<>();
-
+  //构造函数注册系统内置的别名，并存入hashmap中
   public TypeAliasRegistry() {
     registerAlias("string", String.class);
 
@@ -102,6 +94,7 @@ public class TypeAliasRegistry {
 
   @SuppressWarnings("unchecked")
   // throws class cast exception as well if types cannot be assigned
+  //解析类型的别名
   public <T> Class<T> resolveAlias(String string) {
     try {
       if (string == null) {
@@ -112,7 +105,7 @@ public class TypeAliasRegistry {
       Class<T> value;
       if (TYPE_ALIASES.containsKey(key)) {
         value = (Class<T>) TYPE_ALIASES.get(key);
-      } else {
+      } else {//找不到直接转
         value = (Class<T>) Resources.classForName(string);
       }
       return value;
@@ -140,7 +133,7 @@ public class TypeAliasRegistry {
 
   public void registerAlias(Class<?> type) {
     String alias = type.getSimpleName();
-    Alias aliasAnnotation = type.getAnnotation(Alias.class);
+    Alias aliasAnnotation = type.getAnnotation(Alias.class);//通过注解注册
     if (aliasAnnotation != null) {
       alias = aliasAnnotation.value();
     } 
@@ -151,7 +144,7 @@ public class TypeAliasRegistry {
     if (alias == null) {
       throw new TypeException("The parameter alias cannot be null");
     }
-    // issue #748
+    // issue #748 类型转换的bug……
     String key = alias.toLowerCase(Locale.ENGLISH);
     if (TYPE_ALIASES.containsKey(key) && TYPE_ALIASES.get(key) != null && !TYPE_ALIASES.get(key).equals(value)) {
       throw new TypeException("The alias '" + alias + "' is already mapped to the value '" + TYPE_ALIASES.get(key).getName() + "'.");

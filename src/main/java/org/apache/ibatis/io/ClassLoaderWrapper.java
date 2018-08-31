@@ -38,7 +38,7 @@ public class ClassLoaderWrapper {
   
   /**
    * Get a resource as a URL using the current class path
-   *
+   * 使用当前类路径获取资源作为URL
    * @param resource - the resource to locate
    * @return the resource or null
    */
@@ -48,7 +48,7 @@ public class ClassLoaderWrapper {
 
   /**
    * Get a resource from the classpath, starting with a specific class loader
-   *
+   * 从特定的类加载器开始获取资源从classpath
    * @param resource    - the resource to find
    * @param classLoader - the first classloader to try
    * @return the stream or null
@@ -59,7 +59,7 @@ public class ClassLoaderWrapper {
 
   /**
    * Get a resource from the classpath
-   *
+   * 获取资源从classpath
    * @param resource - the resource to find
    * @return the stream or null
    */
@@ -69,7 +69,7 @@ public class ClassLoaderWrapper {
 
   /**
    * Get a resource from the classpath, starting with a specific class loader
-   *
+   * 从特定的类加载器获开始取资源从classpath
    * @param resource    - the resource to find
    * @param classLoader - the first class loader to try
    * @return the stream or null
