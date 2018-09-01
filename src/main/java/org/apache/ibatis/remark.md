@@ -50,7 +50,7 @@ author : 冯凯
 
 - scripting 动态sql语言实现
 
-- session 主要实现SqlSession功能（最核心的）
+- session 主要实现SqlSession功能（最核心的）（✔）
 
 - transaction 事务
 
@@ -69,7 +69,10 @@ author : 冯凯
 > 其他的类处理器基本都是实现的BaseTypeHandler，然后封装了PreparedStatement设置不同类型（jdbc的类型）作为setNonNullParameter。
 > getNullableResult也是类似
 
+> session中Configuration应该是mybatis绝大多数的配置项，包括初始化xml文件加载的mapper文件也存在其中（等）；
+> 主要使用DefaulSqlSession实现了SqlSssion，其中主要用执行对sql进行执行和返回结果
 
+- 20180901 接下来先读builder包中的内容把
 
 
 
