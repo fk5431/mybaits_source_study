@@ -18,6 +18,7 @@ package org.apache.ibatis.session;
 /**
  * @author Clinton Begin
  */
+//分页相关
 public class RowBounds {
 
   public static final int NO_ROW_OFFSET = 0;

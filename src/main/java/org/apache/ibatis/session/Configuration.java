@@ -15,16 +15,6 @@
  */
 package org.apache.ibatis.session;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.CacheRefResolver;
 import org.apache.ibatis.builder.ResultMapResolver;
@@ -39,11 +29,7 @@ import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.datasource.jndi.JndiDataSourceFactory;
 import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
-import org.apache.ibatis.executor.BatchExecutor;
-import org.apache.ibatis.executor.CachingExecutor;
-import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.executor.ReuseExecutor;
-import org.apache.ibatis.executor.SimpleExecutor;
+import org.apache.ibatis.executor.*;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.executor.loader.ProxyFactory;
 import org.apache.ibatis.executor.loader.cglib.CglibProxyFactory;
@@ -63,12 +49,7 @@ import org.apache.ibatis.logging.log4j2.Log4j2Impl;
 import org.apache.ibatis.logging.nologging.NoLoggingImpl;
 import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
-import org.apache.ibatis.mapping.BoundSql;
-import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMap;
-import org.apache.ibatis.mapping.ResultMap;
-import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
+import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.InterceptorChain;
@@ -91,43 +72,57 @@ import org.apache.ibatis.type.TypeAliasRegistry;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.util.*;
+
 /**
  * @author Clinton Begin
+ * mybatis的配置
  */
 public class Configuration {
-
+  //环境
   protected Environment environment;
+  //<settings>节点的配置
+  protected boolean safeRowBoundsEnabled;//允许在嵌套语句中使用分页（RowBounds）。如果允许使用则设置为false。
+  protected boolean safeResultHandlerEnabled = true;//允许在嵌套语句中使用分页（ResultHandler）。如果允许使用则设置为false。
+  protected boolean mapUnderscoreToCamelCase;//是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn 的类似映射。
+  protected boolean aggressiveLazyLoading;//当开启时，任何方法的调用都会加载该对象的所有属性。
+  protected boolean multipleResultSetsEnabled = true;//是否允许单一语句返回多结果集（需要兼容驱动）
+  protected boolean useGeneratedKeys;//允许 JDBC 支持自动生成主键，需要驱动兼容。
+  protected boolean useColumnLabel = true;//使用列标签代替列名
+  protected boolean cacheEnabled = true; //全局地开启或关闭配置文件中的所有映射器已经配置的任何缓存
+  protected boolean callSettersOnNulls;//指定当结果集中值为 null 的时候是否调用映射对象的 setter
+  protected boolean useActualParamName = true;//允许使用方法签名中的名称作为语句参数名称
+  protected boolean returnInstanceForEmptyRow;//当返回行的所有列都是空时,返回一个空实例
 
-  protected boolean safeRowBoundsEnabled;
-  protected boolean safeResultHandlerEnabled = true;
-  protected boolean mapUnderscoreToCamelCase;
-  protected boolean aggressiveLazyLoading;
-  protected boolean multipleResultSetsEnabled = true;
-  protected boolean useGeneratedKeys;
-  protected boolean useColumnLabel = true;
-  protected boolean cacheEnabled = true;
-  protected boolean callSettersOnNulls;
-  protected boolean useActualParamName = true;
-  protected boolean returnInstanceForEmptyRow;
-
-  protected String logPrefix;
-  protected Class <? extends Log> logImpl;
-  protected Class <? extends VFS> vfsImpl;
+  protected String logPrefix;//指定 MyBatis 增加到日志名称的前缀。
+  protected Class <? extends Log> logImpl;//指定 MyBatis 所用日志的具体实现，未指定时将自动查找。
+  protected Class <? extends VFS> vfsImpl;//指定VFS的实现
+  //MyBatis 利用本地缓存机制（Local Cache）防止循环引用（circular references）和加速重复嵌套查询。
   protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+  //当没有为参数提供特定的 JDBC 类型时，为空值指定 JDBC 类型。
   protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
+  //指定哪个对象的方法触发一次延迟加载
   protected Set<String> lazyLoadTriggerMethods = new HashSet<>(Arrays.asList("equals", "clone", "hashCode", "toString"));
+  //设置超时时间，它决定驱动等待数据库响应的秒数。
   protected Integer defaultStatementTimeout;
+  //为驱动的结果集获取数量（fetchSize）设置一个提示值
   protected Integer defaultFetchSize;
+  //配置默认的执行器
   protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
+  //指定 MyBatis 应如何自动映射列到字段或属性
   protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
+  //指定发现自动映射目标未知列（或者未知属性类型）的行为。
   protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
-
+  //以上是setting节点的配置
   protected Properties variables = new Properties();
+  //反射工厂
   protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
+  //对象工厂和对象包装器工厂
   protected ObjectFactory objectFactory = new DefaultObjectFactory();
   protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
-
+  //延迟加载的全局开关。
   protected boolean lazyLoadingEnabled = false;
+  //指定 Mybatis 创建具有延迟加载能力的对象所用到的代理工具。
   protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
 
   protected String databaseId;
@@ -141,12 +136,17 @@ public class Configuration {
 
   protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
   protected final InterceptorChain interceptorChain = new InterceptorChain();
+  //类型处理器注册机
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+  //类型别名注册机
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
   protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
+  //映射的语句,存在Map里
   protected final Map<String, MappedStatement> mappedStatements = new StrictMap<>("Mapped Statements collection");
+  //缓存,存在Map里
   protected final Map<String, Cache> caches = new StrictMap<>("Caches collection");
+  //结果映射,存在Map里
   protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
   protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
   protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
@@ -172,6 +172,7 @@ public class Configuration {
   }
 
   public Configuration() {
+    //注册了更多的类型别名，为什么不在TypeAliasRegistry里注册？？
     typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 
@@ -536,24 +537,24 @@ public class Configuration {
   public LanguageDriver getDefaultScriptingLanuageInstance() {
     return getDefaultScriptingLanguageInstance();
   }
-
+  //创建元对象
   public MetaObject newMetaObject(Object object) {
     return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
   }
-
+  //创建参数处理器
   public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
     parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
     return parameterHandler;
   }
-
+  //创建结果集处理器
   public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
       ResultHandler resultHandler, BoundSql boundSql) {
     ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
     resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
     return resultSetHandler;
   }
-
+  //创建结果集处理器
   public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
@@ -563,7 +564,7 @@ public class Configuration {
   public Executor newExecutor(Transaction transaction) {
     return newExecutor(transaction, defaultExecutorType);
   }
-
+  //产生执行器
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
@@ -840,7 +841,7 @@ public class Configuration {
       }
     }
   }
-
+  //不允许覆盖key所对应的value
   protected static class StrictMap<V> extends HashMap<String, V> {
 
     private static final long serialVersionUID = -4950446264854982944L;

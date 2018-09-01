@@ -28,7 +28,7 @@ author : 冯凯
 - datasource 数据源/连接池
     - 数据源，包括jndi数据源和连接池
     
-- exceptions 异常相关
+- exceptions 异常相关（✔）
     
 - executor sql语句执行器，核心功能包
     
