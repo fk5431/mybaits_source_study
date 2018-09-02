@@ -15,11 +15,6 @@
  */
 package org.apache.ibatis.builder.xml;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Properties;
-import javax.sql.DataSource;
-
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.datasource.DataSourceFactory;
@@ -38,21 +33,23 @@ import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
-import org.apache.ibatis.session.AutoMappingBehavior;
-import org.apache.ibatis.session.AutoMappingUnknownColumnBehavior;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.LocalCacheScope;
+import org.apache.ibatis.session.*;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Properties;
 
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
+//XML配置构建器
 public class XMLConfigBuilder extends BaseBuilder {
-
+  //是否已经解析
   private boolean parsed;
   private final XPathParser parser;
   private String environment;
@@ -65,7 +62,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   public XMLConfigBuilder(Reader reader, String environment) {
     this(reader, environment, null);
   }
-
+  //转换成XPathParser然后去调用构造函数
   public XMLConfigBuilder(Reader reader, String environment, Properties props) {
     this(new XPathParser(reader, true, props, new XMLMapperEntityResolver()), environment, props);
   }
@@ -99,29 +96,40 @@ public class XMLConfigBuilder extends BaseBuilder {
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
-
+  //解析配置
   private void parseConfiguration(XNode root) {
     try {
       //issue #117 read properties first
+      //properties
       propertiesElement(root.evalNode("properties"));
+      //设置
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       loadCustomVfs(settings);
+      //类型别名
       typeAliasesElement(root.evalNode("typeAliases"));
+      //插件
       pluginElement(root.evalNode("plugins"));
+      //对象工厂
       objectFactoryElement(root.evalNode("objectFactory"));
+      //对象包装工厂
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
+      //反射工程
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
+      //环境
       environmentsElement(root.evalNode("environments"));
+      //databaseIdProvider
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      //类处理器
       typeHandlerElement(root.evalNode("typeHandlers"));
+      //映射器
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
     }
   }
-
+//TODO
   private Properties settingsAsProperties(XNode context) {
     if (context == null) {
       return new Properties();

@@ -26,7 +26,7 @@
     </environments>
 
     <mappers>
-        <mapper resource="mapper/PmsgBeanMapper.xml"/>
+        <!--<mapper resource="mapper/PmsgBeanMapper.xml"/>-->
     </mappers>
 
 </configuration>

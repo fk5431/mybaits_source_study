@@ -15,11 +15,6 @@
  */
 package org.apache.ibatis.builder;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.apache.ibatis.mapping.ParameterMode;
 import org.apache.ibatis.mapping.ResultSetType;
 import org.apache.ibatis.session.Configuration;
@@ -28,9 +23,15 @@ import org.apache.ibatis.type.TypeAliasRegistry;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 /**
  * @author Clinton Begin
  */
+//构建器的基类
 public abstract class BaseBuilder {
   protected final Configuration configuration;
   protected final TypeAliasRegistry typeAliasRegistry;
@@ -84,7 +85,7 @@ public abstract class BaseBuilder {
       throw new BuilderException("Error resolving ResultSetType. Cause: " + e, e);
     }
   }
-
+  //IN, OUT, INOUT
   protected ParameterMode resolveParameterMode(String alias) {
     if (alias == null) {
       return null;
@@ -102,12 +103,13 @@ public abstract class BaseBuilder {
       return null;
     }
     try {
+//      return clazz.newInstance();//不一样么
       return resolveClass(alias).newInstance();
     } catch (Exception e) {
       throw new BuilderException("Error creating instance. Cause: " + e, e);
     }
   }
-
+  //根据别名解析class
   protected <T> Class<? extends T> resolveClass(String alias) {
     if (alias == null) {
       return null;
@@ -124,7 +126,7 @@ public abstract class BaseBuilder {
       return null;
     }
     Class<?> type = resolveClass(typeHandlerAlias);
-    if (type != null && !TypeHandler.class.isAssignableFrom(type)) {
+    if (type != null && !TypeHandler.class.isAssignableFrom(type)) {//这个类（ttpe）不是类处理器或类处理器的子类
       throw new BuilderException("Type " + type.getName() + " is not a valid TypeHandler because it does not implement TypeHandler interface");
     }
     @SuppressWarnings( "unchecked" ) // already verified it is a TypeHandler
@@ -140,6 +142,7 @@ public abstract class BaseBuilder {
     TypeHandler<?> handler = typeHandlerRegistry.getMappingTypeHandler(typeHandlerType);
     if (handler == null) {
       // not in registry, create a new one
+      //如果没有注册，调用typeHandlerRegistry.getInstance来new一个TypeHandler返回
       handler = typeHandlerRegistry.getInstance(javaType, typeHandlerType);
     }
     return handler;
