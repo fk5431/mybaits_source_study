@@ -31,6 +31,7 @@ import java.util.HashMap;
  *
  * @author Frank D. Martinez [mnesarco]
  */
+//参数表达式
 public class ParameterExpression extends HashMap<String, String> {
 
   private static final long serialVersionUID = -2417552199605158680L;
@@ -40,10 +41,13 @@ public class ParameterExpression extends HashMap<String, String> {
   }
 
   private void parse(String expression) {
+    //去除空白,返回的p是第一个不是空白的字符位置,0X20 在ASCLL中是空格
     int p = skipWS(expression, 0);
     if (expression.charAt(p) == '(') {
+      //处理表达式
       expression(expression, p + 1);
     } else {
+      //处理属性
       property(expression, p);
     }
   }
@@ -64,6 +68,7 @@ public class ParameterExpression extends HashMap<String, String> {
   }
 
   private void property(String expression, int left) {
+//    #{property,javaType=int,jdbcType=NUMERIC}
     if (left < expression.length()) {
       int right = skipUntil(expression, left, ",:");
       put("property", trimmedStr(expression, left, right));
@@ -91,6 +96,7 @@ public class ParameterExpression extends HashMap<String, String> {
   }
 
   private void jdbcTypeOpt(String expression, int p) {
+    //除去空白
     p = skipWS(expression, p);
     if (p < expression.length()) {
       if (expression.charAt(p) == ':') {

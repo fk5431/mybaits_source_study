@@ -15,15 +15,16 @@
  */
 package org.apache.ibatis.builder;
 
-import java.util.List;
-
 import org.apache.ibatis.mapping.Discriminator;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 
+import java.util.List;
+
 /**
  * @author Eduardo Macarron
  */
+//结果映射解析器
 public class ResultMapResolver {
   private final MapperBuilderAssistant assistant;
   private final String id;

@@ -15,10 +15,6 @@
  */
 package org.apache.ibatis.builder.xml;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.IncompleteElementException;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
@@ -29,9 +25,14 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * @author Frank D. Martinez [mnesarco]
  */
+//XML include转换器
 public class XMLIncludeTransformer {
 
   private final Configuration configuration;
@@ -56,10 +57,18 @@ public class XMLIncludeTransformer {
    * @param source Include node in DOM tree
    * @param variablesContext Current context for static variables with values
    */
+  //<select id="selectUsers" resultType="map">
+  //  select <include refid="userColumns"/>
+  //  from some_table
+  //  where id = #{id}
+  //</select>
   private void applyIncludes(Node source, final Properties variablesContext, boolean included) {
     if (source.getNodeName().equals("include")) {
-      Node toInclude = findSqlFragment(getStringAttribute(source, "refid"), variablesContext);
+      //走到这里，单独解析<include refid="userColumns"/>
+      //拿到SQL片段
+      Node toInclude = findSqlFragment( getStringAttribute(source, "refid"), variablesContext);
       Properties toIncludeContext = getVariablesContext(source, variablesContext);
+      //递归
       applyIncludes(toInclude, toIncludeContext, true);
       if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
         toInclude = source.getOwnerDocument().importNode(toInclude, true);
@@ -93,6 +102,7 @@ public class XMLIncludeTransformer {
     refid = PropertyParser.parse(refid, variables);
     refid = builderAssistant.applyCurrentNamespace(refid, true);
     try {
+      ////去之前存到内存map的SQL片段中寻找
       XNode nodeToInclude = configuration.getSqlFragments().get(refid);
       return nodeToInclude.getNode().cloneNode(true);
     } catch (IllegalArgumentException e) {
@@ -105,7 +115,8 @@ public class XMLIncludeTransformer {
   }
 
   /**
-   * Read placeholders and their values from include node definition. 
+   * Read placeholders and their values from include node definition.
+   * //从包含节点定义读取占位符及其值。
    * @param node Include node instance
    * @param inheritedVariablesContext Current context used for replace variables in new variables values
    * @return variables context from include instance (no inherited values)

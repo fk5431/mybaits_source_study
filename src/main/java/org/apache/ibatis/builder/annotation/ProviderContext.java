@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 
 /**
  * The context object for sql provider method.
- *
+ * sql的上下文对象？
  * @author Kazuki Shimizu
  * @since 3.4.5
  */

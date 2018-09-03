@@ -82,17 +82,17 @@ public class MapperAnnotationBuilder {
 
   public void parse() {
     String resource = type.toString();
-    if (!configuration.isResourceLoaded(resource)) {
-      loadXmlResource();
+    if (!configuration.isResourceLoaded(resource)) {//如果没有加载过，进行加载
+        loadXmlResource();
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
-      parseCache();
-      parseCacheRef();
+      parseCache();//解析注解 CacheNamespace
+      parseCacheRef();//解析CacheNamespaceRef
       Method[] methods = type.getMethods();
       for (Method method : methods) {
         try {
           // issue #237
-          if (!method.isBridge()) {
+          if (!method.isBridge()) {//如果不是桥接方法 才去解析
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {

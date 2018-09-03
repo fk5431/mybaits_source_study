@@ -73,7 +73,8 @@ author : 冯凯
 > 主要使用DefaulSqlSession实现了SqlSssion，其中主要用执行对sql进行执行和返回结果
 
 - 20180901 接下来先读builder包中的内容把
-
+    
+    > builder用了很多建造者模式，对xml、mapper、parameter、result等的进行解析构建，用到了些mapping 和 parse下的方法，需要结合然后在理一遍
 
 
 

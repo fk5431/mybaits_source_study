@@ -104,6 +104,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       propertiesElement(root.evalNode("properties"));
       //设置
       Properties settings = settingsAsProperties(root.evalNode("settings"));
+      //设置用户实现的vfs（如果有的话）
       loadCustomVfs(settings);
       //类型别名
       typeAliasesElement(root.evalNode("typeAliases"));
@@ -113,11 +114,12 @@ public class XMLConfigBuilder extends BaseBuilder {
       objectFactoryElement(root.evalNode("objectFactory"));
       //对象包装工厂
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
-      //反射工程
+      //反射工厂
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
+      //将settings节点下的值配置到configuration
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
-      //环境
+      //环境 dataSource 的一些设置
       environmentsElement(root.evalNode("environments"));
       //databaseIdProvider
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
@@ -129,7 +131,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
     }
   }
-//TODO
+
   private Properties settingsAsProperties(XNode context) {
     if (context == null) {
       return new Properties();
@@ -138,7 +140,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     // Check that all settings are known to the configuration class
     MetaClass metaConfig = MetaClass.forClass(Configuration.class, localReflectorFactory);
     for (Object key : props.keySet()) {
-      if (!metaConfig.hasSetter(String.valueOf(key))) {
+      if (!metaConfig.hasSetter(String.valueOf(key))) {//检查这个key是否有对应的setter method
         throw new BuilderException("The setting " + key + " is not known.  Make sure you spelled it correctly (case sensitive).");
       }
     }
@@ -146,7 +148,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   private void loadCustomVfs(Properties props) throws ClassNotFoundException {
-    String value = props.getProperty("vfsImpl");
+    String value = props.getProperty("vfsImpl");//如果有vfs的实现，将configuration的vfs修改为这个
     if (value != null) {
       String[] clazzes = value.split(",");
       for (String clazz : clazzes) {
@@ -194,7 +196,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       }
     }
   }
-
+  //使用objectFactory标签创建自己的对象工厂
   private void objectFactoryElement(XNode context) throws Exception {
     if (context != null) {
       String type = context.getStringAttribute("type");
@@ -295,7 +297,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       }
     }
   }
-
+  //可以根据不同数据库执行不同的SQL，sql要加databaseId属性
   private void databaseIdProviderElement(XNode context) throws Exception {
     DatabaseIdProvider databaseIdProvider = null;
     if (context != null) {
@@ -367,25 +369,29 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void mapperElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
+        //如果有package标签  将包内的映射器接口实现全部注册为映射器
         if ("package".equals(child.getName())) {
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
         } else {
-          String resource = child.getStringAttribute("resource");
-          String url = child.getStringAttribute("url");
-          String mapperClass = child.getStringAttribute("class");
-          if (resource != null && url == null && mapperClass == null) {
+          String resource = child.getStringAttribute("resource");//使用相对于类路径的资源引用
+          String url = child.getStringAttribute("url");//使用完全限定资源定位符
+          String mapperClass = child.getStringAttribute("class");//使用映射器接口实现类的完全限定类名
+          if (resource != null && url == null && mapperClass == null) {//resource
             ErrorContext.instance().resource(resource);
             InputStream inputStream = Resources.getResourceAsStream(resource);
+            //映射器比较复杂，调用XMLMapperBuilder
+            //for循环里每个mapper都重新new一个XMLMapperBuilder来解析
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
             mapperParser.parse();
-          } else if (resource == null && url != null && mapperClass == null) {
+          } else if (resource == null && url != null && mapperClass == null) {//url
             ErrorContext.instance().resource(url);
             InputStream inputStream = Resources.getUrlAsStream(url);
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
             mapperParser.parse();
-          } else if (resource == null && url == null && mapperClass != null) {
+          } else if (resource == null && url == null && mapperClass != null) {//class
             Class<?> mapperInterface = Resources.classForName(mapperClass);
+            //直接把这个映射加入配置
             configuration.addMapper(mapperInterface);
           } else {
             throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");

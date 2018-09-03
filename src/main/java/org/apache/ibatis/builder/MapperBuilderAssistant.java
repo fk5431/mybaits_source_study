@@ -153,7 +153,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .typeHandler(typeHandlerInstance)
         .build();
   }
-
+  //增加ResultMap
   public ResultMap addResultMap(
       String id,
       Class<?> type,
