@@ -15,23 +15,19 @@
  */
 package org.apache.ibatis.cache.decorators;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
-import java.io.Serializable;
-import java.util.concurrent.locks.ReadWriteLock;
-
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 import org.apache.ibatis.io.Resources;
 
+import java.io.*;
+import java.util.concurrent.locks.ReadWriteLock;
+
 /**
  * @author Clinton Begin
  */
+//序列化缓存
+// 在存取的时候将要缓存object进行序列化和反序列化
+// 这样节约字资源，但是慢了
 public class SerializedCache implements Cache {
 
   private final Cache delegate;
@@ -90,7 +86,7 @@ public class SerializedCache implements Cache {
     return delegate.equals(obj);
   }
 
-  private byte[] serialize(Serializable value) {
+  private byte[] serialize(Serializable value) {//- - 原型模式时候深拷贝也可以用这个来实现克隆
     try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
          ObjectOutputStream oos = new ObjectOutputStream(bos)) {
       oos.writeObject(value);

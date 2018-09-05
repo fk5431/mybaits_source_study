@@ -15,13 +15,15 @@
  */
 package org.apache.ibatis.cache.decorators;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 import org.apache.ibatis.cache.Cache;
+
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * @author Clinton Begin
  */
+//同步缓存
+//防止多线程问题 就是在每个方法上加synchronized
 public class SynchronizedCache implements Cache {
 
   private final Cache delegate;

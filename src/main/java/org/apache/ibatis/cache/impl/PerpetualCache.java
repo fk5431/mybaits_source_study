@@ -15,20 +15,22 @@
  */
 package org.apache.ibatis.cache.impl;
 
+import org.apache.ibatis.cache.Cache;
+import org.apache.ibatis.cache.CacheException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 
-import org.apache.ibatis.cache.Cache;
-import org.apache.ibatis.cache.CacheException;
-
 /**
  * @author Clinton Begin
  */
+//永远缓存，一旦写进来就一直保持
 public class PerpetualCache implements Cache {
-
+  //唯一表示
   private final String id;
 
+  //内部就是一个hashmap实现
   private Map<Object, Object> cache = new HashMap<>();
 
   public PerpetualCache(String id) {

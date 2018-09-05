@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.cache.decorators;
 
+import org.apache.ibatis.cache.Cache;
+
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReadWriteLock;
-
-import org.apache.ibatis.cache.Cache;
 
 /**
  * Weak Reference cache decorator.
@@ -29,6 +29,7 @@ import org.apache.ibatis.cache.Cache;
  * 
  * @author Clinton Begin
  */
+//弱引用缓存  和 软引用缓存差不多
 public class WeakCache implements Cache {
   private final Deque<Object> hardLinksToAvoidGarbageCollection;
   private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;

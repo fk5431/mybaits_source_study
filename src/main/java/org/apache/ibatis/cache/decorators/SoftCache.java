@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.cache.decorators;
 
+import org.apache.ibatis.cache.Cache;
+
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReadWriteLock;
-
-import org.apache.ibatis.cache.Cache;
 
 /**
  * Soft Reference cache decorator
@@ -29,8 +29,11 @@ import org.apache.ibatis.cache.Cache;
  *
  * @author Clinton Begin
  */
+//软引用缓存
 public class SoftCache implements Cache {
+  //链表用来引用元素，防垃圾回收
   private final Deque<Object> hardLinksToAvoidGarbageCollection;
+  //被垃圾回收的引用队列
   private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;
   private final Cache delegate;
   private int numberOfHardLinks;
@@ -61,6 +64,7 @@ public class SoftCache implements Cache {
   @Override
   public void putObject(Object key, Object value) {
     removeGarbageCollectedItems();
+    //存了一个SoftReference，这样value没用时会自动垃圾回收
     delegate.putObject(key, new SoftEntry(key, value, queueOfGarbageCollectedEntries));
   }
 
@@ -108,6 +112,7 @@ public class SoftCache implements Cache {
 
   private void removeGarbageCollectedItems() {
     SoftEntry sv;
+    //查看被垃圾回收的引用队列,然后移除
     while ((sv = (SoftEntry) queueOfGarbageCollectedEntries.poll()) != null) {
       delegate.removeObject(sv.key);
     }

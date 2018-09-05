@@ -10,7 +10,7 @@ author : 冯凯
 
 - binding 将mapper接口绑定配置的相关类
 
-- builder 包含configuration的所有构建器
+- builder 包含configuration的所有构建器 （✔）还需要在回来看一遍
     - BaseBuild 构建器基类
     - XMLConfigBuilder 解析XMLconfiguration配置文件
     - XMLMapperBuilder 解析Mapper.xml配置文件
@@ -76,7 +76,14 @@ author : 冯凯
     
     > builder用了很多建造者模式，对xml、mapper、parameter、result等的进行解析构建，用到了些mapping 和 parse下的方法，需要结合然后在理一遍
 
+- cache
 
+    > Cache接口类定义的一些操作，具体的东西的都得实现类去具体做实现，CacheKey是缓存key（用到了原型模式进行clone）
+    > NullCacheKey 是null值的缓存key，里面不能进行增加元素，直接就抛异常了，（异常这个完全是为了划分结构啊啊）
+    > PerpetualCache就是个永久缓存，里面就是一个唯一标识ID和一个hashmap实现的 - -
+    > decorators包下的还没看，看命名就是各种cache的实现方式，看包名，难道用到了装饰器模式？？
+    > decorators包下的的类都是用到了装饰器模式，对缓存类进行了又一步的包装，有阻塞的，fifo，lru，logging（打印命中率）
+    > schedule 调度的  serialized序列化的*节约空间  soft软引用 week徐引用 synchronized 同步的 ，事务的
 
 
 

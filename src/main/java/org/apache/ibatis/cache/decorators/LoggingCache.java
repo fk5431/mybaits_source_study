@@ -15,15 +15,17 @@
  */
 package org.apache.ibatis.cache.decorators;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
+import java.util.concurrent.locks.ReadWriteLock;
+
 /**
  * @author Clinton Begin
  */
+//日志缓存
+//在取缓存中元素的时候打印命中率
 public class LoggingCache implements Cache {
 
   private final Log log;
@@ -53,12 +55,12 @@ public class LoggingCache implements Cache {
 
   @Override
   public Object getObject(Object key) {
-    requests++;
+    requests++;//请求
     final Object value = delegate.getObject(key);
     if (value != null) {
-      hits++;
+      hits++;//命中
     }
-    if (log.isDebugEnabled()) {
+    if (log.isDebugEnabled()) {//debug下打印
       log.debug("Cache Hit Ratio [" + getId() + "]: " + getHitRatio());
     }
     return value;

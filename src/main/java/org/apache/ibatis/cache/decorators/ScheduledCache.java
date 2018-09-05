@@ -15,13 +15,15 @@
  */
 package org.apache.ibatis.cache.decorators;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 import org.apache.ibatis.cache.Cache;
+
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * @author Clinton Begin
  */
+//定时调度缓存
+//做任何操作都去调用下clearWhenStale，来判断到达清理的时间没有，到了才清理
 public class ScheduledCache implements Cache {
 
   private final Cache delegate;
@@ -30,7 +32,7 @@ public class ScheduledCache implements Cache {
 
   public ScheduledCache(Cache delegate) {
     this.delegate = delegate;
-    this.clearInterval = 60 * 60 * 1000; // 1 hour
+    this.clearInterval = 60 * 60 * 1000; // 1 hour 调度时间
     this.lastClear = System.currentTimeMillis();
   }
 

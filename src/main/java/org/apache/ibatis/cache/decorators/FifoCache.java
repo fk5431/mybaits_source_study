@@ -15,17 +15,19 @@
  */
 package org.apache.ibatis.cache.decorators;
 
+import org.apache.ibatis.cache.Cache;
+
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReadWriteLock;
-
-import org.apache.ibatis.cache.Cache;
 
 /**
  * FIFO (first in, first out) cache decorator
  *
  * @author Clinton Begin
  */
+//FIFO
+//有限的缓存个数，size是1024个，如果超过1024的时候，就把最先缓存的key remove掉
 public class FifoCache implements Cache {
 
   private final Cache delegate;

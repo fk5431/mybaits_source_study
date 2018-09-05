@@ -15,15 +15,16 @@
  */
 package org.apache.ibatis.cache;
 
+import org.apache.ibatis.reflection.ArrayUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.ibatis.reflection.ArrayUtil;
-
 /**
  * @author Clinton Begin
  */
+//缓存key
 public class CacheKey implements Cloneable, Serializable {
 
   private static final long serialVersionUID = 1146682552656046210L;
@@ -57,6 +58,7 @@ public class CacheKey implements Cloneable, Serializable {
   }
 
   public void update(Object object) {
+    //hash值
     int baseHashCode = object == null ? 1 : ArrayUtil.hashCode(object); 
 
     count++;
@@ -120,6 +122,7 @@ public class CacheKey implements Cloneable, Serializable {
   }
 
   @Override
+  //proto
   public CacheKey clone() throws CloneNotSupportedException {
     CacheKey clonedCacheKey = (CacheKey) super.clone();
     clonedCacheKey.updateList = new ArrayList<>(updateList);
