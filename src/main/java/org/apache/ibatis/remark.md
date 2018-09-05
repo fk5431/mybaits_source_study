@@ -17,7 +17,7 @@ author : 冯凯
     - XMLStatementBuilder 解析select,insert,update等标签
     - MapperAnnotationBuilder 注解方式
 
-- cache 缓存
+- cache 缓存 （✔）
     - 缓存的实现
     - 包括各种缓存的装饰器
     - 二级缓存的实现
@@ -85,12 +85,22 @@ author : 冯凯
     > decorators包下的的类都是用到了装饰器模式，对缓存类进行了又一步的包装，有阻塞的，fifo，lru，logging（打印命中率）
     > schedule 调度的  serialized序列化的*节约空间  soft软引用 week徐引用 synchronized 同步的 ，事务的
 
+- datasource
 
+- jdbc
 
+- parsing
 
+- mapping
 
+- binding
 
+- scripting
 
+- executor
 
+- cursor
 
+- transaction
 
+- plugin
