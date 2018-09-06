@@ -30,6 +30,10 @@ import java.util.regex.Pattern;
 /**
  * @author Clinton Begin
  */
+/**
+ * 脚本运行器,可以运行SQL脚本，为单元测试的前期准备
+ * 一般座位单元测试的工具来使用
+ */
 public class ScriptRunner {
 
   private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");

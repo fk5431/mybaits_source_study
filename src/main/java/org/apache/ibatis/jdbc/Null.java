@@ -41,6 +41,8 @@ import org.apache.ibatis.type.TypeHandler;
  * @author Clinton Begin
  * @author Adam Gent
  */
+//枚举 对应类型的类处理器
+  // 为什么叫Null，在SqlRunner中如果是 instanceof Null 的，设置参数的值都为null
 public enum Null {
   BOOLEAN(new BooleanTypeHandler(), JdbcType.BOOLEAN),
 

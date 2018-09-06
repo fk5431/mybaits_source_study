@@ -18,6 +18,7 @@ package org.apache.ibatis.jdbc;
 /**
  * @author Clinton Begin
  */
+//都在AbstractSQL中实现了
 public class SQL extends AbstractSQL<SQL> {
 
   @Override

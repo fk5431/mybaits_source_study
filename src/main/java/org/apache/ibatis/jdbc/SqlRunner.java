@@ -15,25 +15,18 @@
  */
 package org.apache.ibatis.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.sql.*;
+import java.util.*;
+
 /**
  * @author Clinton Begin
+ */
+/**
+ * sql运行器,可以运行SQL，也是作为测试来使用
  */
 public class SqlRunner {
 
@@ -219,10 +212,10 @@ public class SqlRunner {
   private List<Map<String, Object>> getResults(ResultSet rs) throws SQLException {
     try {
       List<Map<String, Object>> list = new ArrayList<>();
-      List<String> columns = new ArrayList<>();
+      List<String> columns = new ArrayList<>();//列名
       List<TypeHandler<?>> typeHandlers = new ArrayList<>();
       ResultSetMetaData rsmd = rs.getMetaData();
-      for (int i = 0, n = rsmd.getColumnCount(); i < n; i++) {
+      for (int i = 0, n = rsmd.getColumnCount(); i < n; i++) {//
         columns.add(rsmd.getColumnLabel(i + 1));
         try {
           Class<?> type = Resources.classForName(rsmd.getColumnClassName(i + 1));

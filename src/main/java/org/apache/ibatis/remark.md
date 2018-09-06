@@ -34,9 +34,9 @@ author : 冯凯
     
 - io 读取资源文件 （✔）（没完全看懂）
         
-- jdbc jdbc的一些操作 sql操作
+- jdbc jdbc的一些操作 sql操作 （✔）
 
-- lang UsesJava7，UsesJava8注解标识那些可以使用jdk7api，那些可以使用jdk8api
+- lang UsesJava7，UsesJava8注解标识那些可以使用jdk7api，那些可以使用jdk8api （✔）
 
 - logging 日志 （✔）
 
@@ -91,7 +91,12 @@ author : 冯凯
     > 应该是用的mybatis的jndi
 
 - jdbc
-
+    > AbstractSQL 类有两个内部类， SafeAppendable实现了一个安全的添加，SQLStatement 实现了对sql的拼接，
+    > AbstractSQL 对外暴露，进行给SQLStatement中的变量复制，最终完成sql的拼接,就一个abstract方法getSelf()
+    > Null就是枚举了一些类处理器，ScriptRunner是脚本处理器（还没仔细看完），SqlRunner是sql运行器，这两个都是
+    > 可以用来进行单元测试的工具，SqlRunner中进行对PreparedStatement设置参数的时候，如果args instanceof Null则参数为null
+    > SQL 中的内容都是在父类AbstractSQL中实现的
+    
 - parsing
 
 - mapping

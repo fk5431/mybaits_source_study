@@ -20,6 +20,7 @@ package org.apache.ibatis.jdbc;
  *
  * @author Jeff Butler
  */
+//废弃的类，只是对SQL包了一层，意义不大啊
 public class SqlBuilder {
 
   private static final ThreadLocal<SQL> localSQL = new ThreadLocal<>();

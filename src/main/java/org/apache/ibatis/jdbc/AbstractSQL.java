@@ -277,7 +277,7 @@ public abstract class AbstractSQL<T> {
     sql().sql(sb);
     return sb.toString();
   }
-
+  //安全的Appendable
   private static class SafeAppendable {
     private final Appendable a;
     private boolean empty = true;
@@ -304,7 +304,7 @@ public abstract class AbstractSQL<T> {
     }
 
   }
-
+  //SQL 语句
   private static class SQLStatement {
 
     public enum StatementType {
@@ -332,11 +332,14 @@ public abstract class AbstractSQL<T> {
     public SQLStatement() {
         // Prevent Synthetic Access
     }
-
+    //拼接SQL？
+    // builder是之前拼接的语句，keyword一般就是select from 之类的关键词
+    // parts 一般就是参数 open 一般是 ( close 一般是 ）
+    // conjunction 结合条件 eg: , , and ...
     private void sqlClause(SafeAppendable builder, String keyword, List<String> parts, String open, String close,
                            String conjunction) {
       if (!parts.isEmpty()) {
-        if (!builder.isEmpty()) {
+        if (!builder.isEmpty()) {//builder中有值，加 \n
           builder.append("\n");
         }
         builder.append(keyword);
@@ -354,7 +357,8 @@ public abstract class AbstractSQL<T> {
         builder.append(close);
       }
     }
-
+    //拼接select
+    //都是通过调用sqlClause完成的
     private String selectSQL(SafeAppendable builder) {
       if (distinct) {
         sqlClause(builder, "SELECT DISTINCT", select, "", "", ", ");
@@ -399,7 +403,7 @@ public abstract class AbstractSQL<T> {
       sqlClause(builder, "WHERE", where, "(", ")", " AND ");
       return builder.toString();
     }
-
+    //拼接sql
     public String sql(Appendable a) {
       SafeAppendable builder = new SafeAppendable(a);
       if (statementType == null) {
