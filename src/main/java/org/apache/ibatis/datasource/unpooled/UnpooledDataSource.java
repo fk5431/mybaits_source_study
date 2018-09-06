@@ -15,39 +15,35 @@
  */
 package org.apache.ibatis.datasource.unpooled;
 
+import org.apache.ibatis.io.Resources;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.DriverPropertyInfo;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.sql.DataSource;
-
-import org.apache.ibatis.io.Resources;
-
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+//没有池的数据源
 public class UnpooledDataSource implements DataSource {
   
   private ClassLoader driverClassLoader;
-  private Properties driverProperties;
+  private Properties driverProperties;//其他的一些配置项
   private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
-
+  //应该在factory 进行setProperties时候就赋值
   private String driver;
   private String url;
   private String username;
   private String password;
 
-  private Boolean autoCommit;
-  private Integer defaultTransactionIsolationLevel;
+  private Boolean autoCommit;//是否自动链接
+  private Integer defaultTransactionIsolationLevel;//默认的事务等级
 
   static {
     Enumeration<Driver> drivers = DriverManager.getDrivers();
@@ -223,6 +219,7 @@ public class UnpooledDataSource implements DataSource {
     }
   }
 
+  //配置链接
   private void configureConnection(Connection conn) throws SQLException {
     if (autoCommit != null && autoCommit != conn.getAutoCommit()) {
       conn.setAutoCommit(autoCommit);

@@ -15,24 +15,27 @@
  */
 package org.apache.ibatis.datasource.jndi;
 
-import java.util.Map.Entry;
-import java.util.Properties;
+import org.apache.ibatis.datasource.DataSourceException;
+import org.apache.ibatis.datasource.DataSourceFactory;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import org.apache.ibatis.datasource.DataSourceException;
-import org.apache.ibatis.datasource.DataSourceFactory;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * @author Clinton Begin
  */
+//JNDI数据源工厂
+// 这个数据源的实现是为了使用如 Spring 或应用服务器这类的容器, 容
+// 器可以集中或在外部配置数据源,然后放置一个 JNDI 上下文的引用。
 public class JndiDataSourceFactory implements DataSourceFactory {
 
   public static final String INITIAL_CONTEXT = "initial_context";
   public static final String DATA_SOURCE = "data_source";
+  //可以通过 env. 的前缀 向初始化上下文发送属性
   public static final String ENV_PREFIX = "env.";
 
   private DataSource dataSource;
@@ -41,6 +44,7 @@ public class JndiDataSourceFactory implements DataSourceFactory {
   public void setProperties(Properties properties) {
     try {
       InitialContext initCtx;
+      //得到 env. 前缀的属性
       Properties env = getEnvProperties(properties);
       if (env == null) {
         initCtx = new InitialContext();

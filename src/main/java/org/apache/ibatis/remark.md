@@ -25,7 +25,7 @@ author : 冯凯
 - cursor
     - 游标方式查询数据
     
-- datasource 数据源/连接池
+- datasource 数据源/连接池 （✔）
     - 数据源，包括jndi数据源和连接池
     
 - exceptions 异常相关（✔）
@@ -86,6 +86,9 @@ author : 冯凯
     > schedule 调度的  serialized序列化的*节约空间  soft软引用 week徐引用 synchronized 同步的 ，事务的
 
 - datasource
+    
+    > datasource 数据源的包，mybatis做了三种实现，jndi，pooled，unpooled，一般我们使用的时候都使用第三方的连接池，
+    > 应该是用的mybatis的jndi
 
 - jdbc
 

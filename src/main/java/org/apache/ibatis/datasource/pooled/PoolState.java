@@ -24,16 +24,20 @@ import java.util.List;
 public class PoolState {
 
   protected PooledDataSource dataSource;
-
+  //空闲连接
   protected final List<PooledConnection> idleConnections = new ArrayList<>();
+  //活动连接
   protected final List<PooledConnection> activeConnections = new ArrayList<>();
   protected long requestCount = 0;
+  //累计请求时间
   protected long accumulatedRequestTime = 0;
   protected long accumulatedCheckoutTime = 0;
   protected long claimedOverdueConnectionCount = 0;
   protected long accumulatedCheckoutTimeOfOverdueConnections = 0;
   protected long accumulatedWaitTime = 0;
+  //等待次数
   protected long hadToWaitCount = 0;
+  //不能用的链接次数
   protected long badConnectionCount = 0;
 
   public PoolState(PooledDataSource dataSource) {

@@ -15,17 +15,19 @@
  */
 package org.apache.ibatis.datasource.pooled;
 
+import org.apache.ibatis.reflection.ExceptionUtil;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.ibatis.reflection.ExceptionUtil;
-
 /**
  * @author Clinton Begin
  */
+//池连接
+//用到了代理模式  动态代理
 class PooledConnection implements InvocationHandler {
 
   private static final String CLOSE = "close";
@@ -33,7 +35,9 @@ class PooledConnection implements InvocationHandler {
 
   private final int hashCode;
   private final PooledDataSource dataSource;
+  //真的连接
   private final Connection realConnection;
+  //代理的连接
   private final Connection proxyConnection;
   private long checkoutTimestamp;
   private long createdTimestamp;
@@ -232,6 +236,7 @@ class PooledConnection implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     String methodName = method.getName();
+    //如果调用close,将这个connection加入到池中
     if (CLOSE.hashCode() == methodName.hashCode() && CLOSE.equals(methodName)) {
       dataSource.pushConnection(this);
       return null;
@@ -240,8 +245,10 @@ class PooledConnection implements InvocationHandler {
         if (!Object.class.equals(method.getDeclaringClass())) {
           // issue #579 toString() should never fail
           // throw an SQLException instead of a Runtime
+          //除了toString()方法，其他方法调用之前要检查connection是否还是合法的,不合法要抛出SQLException
           checkConnection();
         }
+        //其他方法交给真的connection处理
         return method.invoke(realConnection, args);
       } catch (Throwable t) {
         throw ExceptionUtil.unwrapThrowable(t);

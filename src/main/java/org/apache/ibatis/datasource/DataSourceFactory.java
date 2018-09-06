@@ -15,14 +15,16 @@
  */
 package org.apache.ibatis.datasource;
 
-import java.util.Properties;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * @author Clinton Begin
  */
+//数据源工厂
+//  有三种数据源 UNPOOLED POOLED JNDI
 public interface DataSourceFactory {
-
+  //由XMLConfigBuilder调用设置属性
   void setProperties(Properties props);
 
   DataSource getDataSource();
