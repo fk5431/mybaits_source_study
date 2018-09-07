@@ -59,10 +59,10 @@ author : 冯凯
 ## type 
 
 - JdbcType 包装了下java.sql.Types
-
-- TypeHandler  类处理器 
-
-- BaseTypeHandler 类处理器的基类
+    
+  >  - TypeHandler  类处理器 
+    
+  >  - BaseTypeHandler 类处理器的基类
 
 > ByteArrayUtils byte 和 Byte 的转换
 
@@ -96,6 +96,7 @@ author : 冯凯
     > Null就是枚举了一些类处理器，ScriptRunner是脚本处理器（还没仔细看完），SqlRunner是sql运行器，这两个都是
     > 可以用来进行单元测试的工具，SqlRunner中进行对PreparedStatement设置参数的时候，如果args instanceof Null则参数为null
     > SQL 中的内容都是在父类AbstractSQL中实现的
+    > ScriptRunner 就是脚本的执行和处理，有一些参数的设置可能方便的去调试
     
 - parsing
 

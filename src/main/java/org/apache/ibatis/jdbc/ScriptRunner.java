@@ -48,8 +48,8 @@ public class ScriptRunner {
   private boolean throwWarning;
   private boolean autoCommit;
   private boolean sendFullScript;
-  private boolean removeCRs;
-  private boolean escapeProcessing = true;
+  private boolean removeCRs;//"\r\n" 替换为"\n"
+  private boolean escapeProcessing = true;//是否允许对转义处理
 
   private PrintWriter logWriter = new PrintWriter(System.out);
   private PrintWriter errorLogWriter = new PrintWriter(System.err);
@@ -103,18 +103,18 @@ public class ScriptRunner {
   public void setFullLineDelimiter(boolean fullLineDelimiter) {
     this.fullLineDelimiter = fullLineDelimiter;
   }
-
+  //运行script
   public void runScript(Reader reader) {
-    setAutoCommit();
+    setAutoCommit();//设置autoCommit 为 ScriptRunner的 autoCommit 而不是connection
 
     try {
-      if (sendFullScript) {
+      if (sendFullScript) {//全部运行还是按行运行？
         executeFullScript(reader);
       } else {
         executeLineByLine(reader);
       }
     } finally {
-      rollbackConnection();
+      rollbackConnection();//回滚
     }
   }
 
@@ -123,14 +123,14 @@ public class ScriptRunner {
     try {
       BufferedReader lineReader = new BufferedReader(reader);
       String line;
-      while ((line = lineReader.readLine()) != null) {
+      while ((line = lineReader.readLine()) != null) {//也是按行读 然后拼起来
         script.append(line);
         script.append(LINE_SEPARATOR);
       }
       String command = script.toString();
-      println(command);
+      println(command);//输出出来
       executeStatement(command);
-      commitConnection();
+      commitConnection();//提交  事务的保存
     } catch (Exception e) {
       String message = "Error executing: " + script + ".  Cause: " + e;
       printlnError(message);
@@ -147,7 +147,7 @@ public class ScriptRunner {
         handleLine(command, line);
       }
       commitConnection();
-      checkForMissingLineTerminator(command);
+      checkForMissingLineTerminator(command);//check是否有还没执行的
     } catch (Exception e) {
       String message = "Error executing: " + command + ".  Cause: " + e;
       printlnError(message);
@@ -201,22 +201,22 @@ public class ScriptRunner {
 
   private void handleLine(StringBuilder command, String line) throws SQLException {
     String trimmedLine = line.trim();
-    if (lineIsComment(trimmedLine)) {
-      Matcher matcher = DELIMITER_PATTERN.matcher(trimmedLine);
-      if (matcher.find()) {
-        delimiter = matcher.group(5);
+      if (lineIsComment(trimmedLine)) {// 是不是注释
+        Matcher matcher = DELIMITER_PATTERN.matcher(trimmedLine);
+        if (matcher.find()) {
+          delimiter = matcher.group(5);
+        }
+        println(trimmedLine);//正则匹配到输出？
+      } else if (commandReadyToExecute(trimmedLine)) {//是不是能提交的命令
+        command.append(line.substring(0, line.lastIndexOf(delimiter)));
+        command.append(LINE_SEPARATOR);
+        println(command);
+        executeStatement(command.toString());
+        command.setLength(0);
+      } else if (trimmedLine.length() > 0) {
+        command.append(line);
+        command.append(LINE_SEPARATOR);
       }
-      println(trimmedLine);
-    } else if (commandReadyToExecute(trimmedLine)) {
-      command.append(line.substring(0, line.lastIndexOf(delimiter)));
-      command.append(LINE_SEPARATOR);
-      println(command);
-      executeStatement(command.toString());
-      command.setLength(0);
-    } else if (trimmedLine.length() > 0) {
-      command.append(line);
-      command.append(LINE_SEPARATOR);
-    }
   }
 
   private boolean lineIsComment(String trimmedLine) {
@@ -227,26 +227,26 @@ public class ScriptRunner {
     // issue #561 remove anything after the delimiter
     return !fullLineDelimiter && trimmedLine.contains(delimiter) || fullLineDelimiter && trimmedLine.equals(delimiter);
   }
-
+  //执行
   private void executeStatement(String command) throws SQLException {
     Statement statement = connection.createStatement();
     try {
-      statement.setEscapeProcessing(escapeProcessing);
+      statement.setEscapeProcessing(escapeProcessing);//true以允许对转义处理。
       String sql = command;
       if (removeCRs) {
         sql = sql.replaceAll("\r\n", "\n");
       }
       try {
-        boolean hasResults = statement.execute(sql);
+        boolean hasResults = statement.execute(sql);//执行
         while (!(!hasResults && statement.getUpdateCount() == -1)) {
-          checkWarnings(statement);
-          printResults(statement, hasResults);
-          hasResults = statement.getMoreResults();
+          checkWarnings(statement);//如果检查warnings  有的话就抛出异样了
+          printResults(statement, hasResults);//有返回值 打印返回值
+          hasResults = statement.getMoreResults();//是否有多结果集 要想获取第二个结果集 就要调用这个
         }
       } catch (SQLWarning e) {
         throw e;
       } catch (SQLException e) {
-        if (stopOnError) {
+        if (stopOnError) {//是否停止 不停止输出异常继续了
           throw e;
         } else {
           String message = "Error executing: " + command + ".  Cause: " + e;
@@ -269,7 +269,7 @@ public class ScriptRunner {
     }
     // In Oracle, CREATE PROCEDURE, FUNCTION, etc. returns warning
     // instead of throwing exception if there is compilation error.
-    SQLWarning warning = statement.getWarnings();
+    SQLWarning warning = statement.getWarnings();//返回warn
     if (warning != null) {
       throw warning;
     }
