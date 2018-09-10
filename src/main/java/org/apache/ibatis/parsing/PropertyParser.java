@@ -21,6 +21,7 @@ import java.util.Properties;
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
+//属性解析器
 public class PropertyParser {
 
   private static final String KEY_PREFIX = "org.apache.ibatis.parsing.PropertyParser.";
@@ -46,12 +47,13 @@ public class PropertyParser {
   private static final String ENABLE_DEFAULT_VALUE = "false";
   private static final String DEFAULT_VALUE_SEPARATOR = ":";
 
-  private PropertyParser() {
+  private PropertyParser() {//不让初始化
     // Prevent Instantiation
   }
 
-  public static String parse(String string, Properties variables) {
+  public static String parse(String string, Properties variables) {//解析
     VariableTokenHandler handler = new VariableTokenHandler(variables);
+    //用自己的内部类完成转换
     GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
     return parser.parse(string);
   }
@@ -62,7 +64,8 @@ public class PropertyParser {
     private final String defaultValueSeparator;
 
     private VariableTokenHandler(Properties variables) {
-      this.variables = variables;
+      this.variables = variables;//初始化Properties
+      //如果传的属性没有这两个值就用默认的
       this.enableDefaultValue = Boolean.parseBoolean(getPropertyValue(KEY_ENABLE_DEFAULT_VALUE, ENABLE_DEFAULT_VALUE));
       this.defaultValueSeparator = getPropertyValue(KEY_DEFAULT_VALUE_SEPARATOR, DEFAULT_VALUE_SEPARATOR);
     }
@@ -72,13 +75,14 @@ public class PropertyParser {
     }
 
     @Override
-    public String handleToken(String content) {
+    public String handleToken(String content) {//真正的替换值
       if (variables != null) {
         String key = content;
-        if (enableDefaultValue) {
+        if (enableDefaultValue) {//有默认值的话
           final int separatorIndex = content.indexOf(defaultValueSeparator);
           String defaultValue = null;
-          if (separatorIndex >= 0) {
+          if (separatorIndex >= 0) {//得到分隔符前面的字符串
+            //就是有分隔符的串代表有默认值，如果properties有值就用，没值就用人家自己的默认值
             key = content.substring(0, separatorIndex);
             defaultValue = content.substring(separatorIndex + defaultValueSeparator.length());
           }
@@ -86,11 +90,11 @@ public class PropertyParser {
             return variables.getProperty(key, defaultValue);
           }
         }
-        if (variables.containsKey(key)) {
+        if (variables.containsKey(key)) {//如果属性中有对应值就返回
           return variables.getProperty(key);
         }
       }
-      return "${" + content + "}";
+      return "${" + content + "}";//没有就加上 开始结束的标志的返回，然后可以后续的解析？
     }
   }
 

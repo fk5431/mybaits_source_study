@@ -100,6 +100,10 @@ author : 冯凯
     
 - parsing
 
+    > parsing中实现了两部分内容，首先是标志解析器，定了一个通用的解析器，具体的解析行为可以有持有实例的（继承于TokenHandler）
+    类实现
+    > 第二部分就是对xml文档的解析和使用，对org.w3c.dom.Node的包装 和 封装的一些jdk的类
+    
 - mapping
 
 - binding

@@ -15,20 +15,18 @@
  */
 package org.apache.ibatis.parsing;
 
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 /**
  * @author Clinton Begin
  */
+//对org.w3c.dom.Node的包装
 public class XNode {
 
   private final Node node;
@@ -59,7 +57,7 @@ public class XNode {
       return new XNode(xpathParser, parent, variables);
     }
   }
-
+  //取得完全的path
   public String getPath() {
     StringBuilder builder = new StringBuilder();
     Node current = node;
@@ -72,7 +70,7 @@ public class XNode {
     }
     return builder.toString();
   }
-
+  //取得标示符
   public String getValueBasedIdentifier() {
     StringBuilder builder = new StringBuilder();
     XNode current = this;
