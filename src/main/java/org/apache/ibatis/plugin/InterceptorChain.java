@@ -22,10 +22,12 @@ import java.util.List;
 /**
  * @author Clinton Begin
  */
+//拦截器链
 public class InterceptorChain {
-
+  //存储了一个拦截器的list
   private final List<Interceptor> interceptors = new ArrayList<>();
 
+  //调用每个拦截器的plugin
   public Object pluginAll(Object target) {
     for (Interceptor interceptor : interceptors) {
       target = interceptor.plugin(target);

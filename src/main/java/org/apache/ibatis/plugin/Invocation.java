@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 /**
  * @author Clinton Begin
  */
+//调用target的method ，传入参数args
 public class Invocation {
 
   private final Object target;

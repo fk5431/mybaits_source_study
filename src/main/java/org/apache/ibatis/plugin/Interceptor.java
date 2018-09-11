@@ -20,10 +20,13 @@ import java.util.Properties;
 /**
  * @author Clinton Begin
  */
+//拦截器
 public interface Interceptor {
 
+  //拦截
   Object intercept(Invocation invocation) throws Throwable;
 
+  //插入
   Object plugin(Object target);
 
   void setProperties(Properties properties);

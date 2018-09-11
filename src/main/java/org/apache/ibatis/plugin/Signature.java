@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
+//定义那些类、方法、参数苏需要拦截
 public @interface Signature {
   Class<?> type();
 
