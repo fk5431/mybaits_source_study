@@ -105,6 +105,9 @@ author : 冯凯
     > 第二部分就是对xml文档的解析和使用，对org.w3c.dom.Node的包装 和 封装的一些jdk的类
     
 - mapping
+    
+    > ParameterMapping 参数映射,存储了一个参数映射的属性 ParameterMode 参数映射的枚举  BoundSql 绑定sql
+    > CacheBuilder 缓存构建器 实现对了对缓存的创建，并且对缓存实例在·进行了装饰
 
 - binding
 

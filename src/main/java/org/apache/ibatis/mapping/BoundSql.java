@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An actual SQL String got from an {@link SqlSource} after having processed any dynamic content.
@@ -33,10 +33,12 @@ import org.apache.ibatis.session.Configuration;
  *
  * @author Clinton Begin
  */
+//绑定sql，将动态内容处理完得到sql
+//只有附加参数可以增加，其他参数在通过构造函数构建的时候就确定了，不能在修改了
 public class BoundSql {
 
   private final String sql;
-  private final List<ParameterMapping> parameterMappings;
+  private final List<ParameterMapping> parameterMappings;//参数映射的列表
   private final Object parameterObject;
   private final Map<String, Object> additionalParameters;
   private final MetaObject metaParameters;

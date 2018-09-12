@@ -15,34 +15,30 @@
  */
 package org.apache.ibatis.mapping;
 
+import org.apache.ibatis.builder.InitializingObject;
+import org.apache.ibatis.cache.Cache;
+import org.apache.ibatis.cache.CacheException;
+import org.apache.ibatis.cache.decorators.*;
+import org.apache.ibatis.cache.impl.PerpetualCache;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.SystemMetaObject;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.ibatis.cache.Cache;
-import org.apache.ibatis.cache.CacheException;
-import org.apache.ibatis.builder.InitializingObject;
-import org.apache.ibatis.cache.decorators.BlockingCache;
-import org.apache.ibatis.cache.decorators.LoggingCache;
-import org.apache.ibatis.cache.decorators.LruCache;
-import org.apache.ibatis.cache.decorators.ScheduledCache;
-import org.apache.ibatis.cache.decorators.SerializedCache;
-import org.apache.ibatis.cache.decorators.SynchronizedCache;
-import org.apache.ibatis.cache.impl.PerpetualCache;
-import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.SystemMetaObject;
-
 /**
  * @author Clinton Begin
  */
+//缓存构建器
 public class CacheBuilder {
   private final String id;
-  private Class<? extends Cache> implementation;
-  private final List<Class<? extends Cache>> decorators;
+  private Class<? extends Cache> implementation;//缓存具体的实现
+  private final List<Class<? extends Cache>> decorators;//装饰器
   private Integer size;
-  private Long clearInterval;
+  private Long clearInterval;//失效时间把
   private boolean readWrite;
   private Properties properties;
   private boolean blocking;
@@ -90,17 +86,18 @@ public class CacheBuilder {
   }
 
   public Cache build() {
-    setDefaultImplementations();
-    Cache cache = newBaseCacheInstance(implementation, id);
-    setCacheProperties(cache);
+    setDefaultImplementations();//默认的缓存实现是永久缓存，默认的装饰器是最近最少使用
+    Cache cache = newBaseCacheInstance(implementation, id);//构建一个基础的缓存实例
+    setCacheProperties(cache);//设置缓存的属性，并且初始化
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
-        cache = newCacheDecoratorInstance(decorator, cache);
+        cache = newCacheDecoratorInstance(decorator, cache);//用装饰器装饰
         setCacheProperties(cache);
       }
-      cache = setStandardDecorators(cache);
+      cache = setStandardDecorators(cache);//加上标准装饰器
     } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
+      //如果是用户实现的缓存，要加日志
       cache = new LoggingCache(cache);
     }
     return cache;
@@ -121,15 +118,16 @@ public class CacheBuilder {
       if (size != null && metaCache.hasSetter("size")) {
         metaCache.setValue("size", size);
       }
-      if (clearInterval != null) {
+      if (clearInterval != null) {//有清理时间
+        //定时调度缓存装饰
         cache = new ScheduledCache(cache);
         ((ScheduledCache) cache).setClearInterval(clearInterval);
       }
-      if (readWrite) {
+      if (readWrite) {//可读写的缓存 会返回缓存对象的拷贝(通过序列化)
         cache = new SerializedCache(cache);
       }
-      cache = new LoggingCache(cache);
-      cache = new SynchronizedCache(cache);
+      cache = new LoggingCache(cache);//日志
+      cache = new SynchronizedCache(cache);//同步
       if (blocking) {
         cache = new BlockingCache(cache);
       }
@@ -176,7 +174,7 @@ public class CacheBuilder {
         }
       }
     }
-    if (InitializingObject.class.isAssignableFrom(cache.getClass())){
+    if (InitializingObject.class.isAssignableFrom(cache.getClass())){//呃 如果实现了InitializingObject，就调用它的initalize
       try {
         ((InitializingObject) cache).initialize();
       } catch (Exception e) {
@@ -187,6 +185,7 @@ public class CacheBuilder {
   }
 
   private Cache newBaseCacheInstance(Class<? extends Cache> cacheClass, String id) {
+    //得到缓存的构造函数 是以字符串为参数的，传进去相当于缓存的id
     Constructor<? extends Cache> cacheConstructor = getBaseCacheConstructor(cacheClass);
     try {
       return cacheConstructor.newInstance(id);

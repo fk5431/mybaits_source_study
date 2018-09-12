@@ -15,16 +15,21 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.sql.ResultSet;
-
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.sql.ResultSet;
+
 /**
  * @author Clinton Begin
  */
+//参数映射
+// > mode 属性允许你指定 IN，OUT 或 INOUT 参数。如果参数为 OUT 或 INOUT，参数对象属性的真实值将会被改变，
+// 就像你在获取输出参数时所期望的那样。如果 mode 为 OUT（或 INOUT），而且 jdbcType 为 CURSOR(也就是 Oracle 的 REFCURSOR)，
+// 你必须指定一个 resultMap 来映射结果集 ResultMap 到参数类型。要注意这里的 javaType 属性是可选的，
+// 如果留空并且 jdbcType 是 CURSOR，它会被自动地被设为 ResultMap。
 public class ParameterMapping {
 
   private Configuration configuration;
@@ -33,8 +38,8 @@ public class ParameterMapping {
   private ParameterMode mode;
   private Class<?> javaType = Object.class;
   private JdbcType jdbcType;
-  private Integer numericScale;
-  private TypeHandler<?> typeHandler;
+  private Integer numericScale;//保留小数位，基本不怎么用啊
+  private TypeHandler<?> typeHandler;//指定特殊的类处理器
   private String resultMapId;
   private String jdbcTypeName;
   private String expression;
@@ -101,7 +106,7 @@ public class ParameterMapping {
 
     public ParameterMapping build() {
       resolveTypeHandler();
-      validate();
+      validate();//校验
       return parameterMapping;
     }
 
@@ -122,6 +127,7 @@ public class ParameterMapping {
     }
 
     private void resolveTypeHandler() {
+      //如果没有typeHandler（类处理器），那就根据javaType 和 jdbcType 来获取一个
       if (parameterMapping.typeHandler == null && parameterMapping.javaType != null) {
         Configuration configuration = parameterMapping.configuration;
         TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
