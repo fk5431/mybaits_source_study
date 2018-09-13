@@ -15,16 +15,15 @@
  */
 package org.apache.ibatis.mapping;
 
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
 
 /**
  * Vendor DatabaseId provider
@@ -37,6 +36,7 @@ import org.apache.ibatis.logging.LogFactory;
  * 
  * @author Eduardo Macarron
  */
+//数据库供应商id
 public class VendorDatabaseIdProvider implements DatabaseIdProvider {
   
   private static final Log log = LogFactory.getLog(VendorDatabaseIdProvider.class);
@@ -49,6 +49,7 @@ public class VendorDatabaseIdProvider implements DatabaseIdProvider {
       throw new NullPointerException("dataSource cannot be null");
     }
     try {
+      //得到数据库的名字
       return getDatabaseName(dataSource);
     } catch (Exception e) {
       log.error("Could not get a databaseId from dataSource", e);
@@ -79,7 +80,9 @@ public class VendorDatabaseIdProvider implements DatabaseIdProvider {
     Connection con = null;
     try {
       con = dataSource.getConnection();
+      //在jdbc中获取数据库的定义，例如：数据库，表，列的定义信息。就用到元数据
       DatabaseMetaData metaData = con.getMetaData();
+      //通过DatabaseMetaData getDatabaseProductName 得到数据库产品的名字
       return metaData.getDatabaseProductName();
     } finally {
       if (con != null) {

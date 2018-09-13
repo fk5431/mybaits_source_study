@@ -15,15 +15,6 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.logging.Log;
@@ -31,9 +22,14 @@ import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.reflection.ParamNameUtil;
 import org.apache.ibatis.session.Configuration;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.util.*;
+
 /**
  * @author Clinton Begin
  */
+//结果映射
 public class ResultMap {
   private Configuration configuration;
 
@@ -45,7 +41,7 @@ public class ResultMap {
   private List<ResultMapping> propertyResultMappings;
   private Set<String> mappedColumns;
   private Set<String> mappedProperties;
-  private Discriminator discriminator;
+  private Discriminator discriminator;//鉴别器
   private boolean hasNestedResultMaps;
   private boolean hasNestedQueries;
   private Boolean autoMapping;
@@ -67,7 +63,7 @@ public class ResultMap {
       resultMap.id = id;
       resultMap.type = type;
       resultMap.resultMappings = resultMappings;
-      resultMap.autoMapping = autoMapping;
+      resultMap.autoMapping = autoMapping;//自动映射为null
     }
 
     public Builder discriminator(Discriminator discriminator) {

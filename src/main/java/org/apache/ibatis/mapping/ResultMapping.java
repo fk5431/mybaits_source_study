@@ -15,19 +15,21 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author Clinton Begin
  */
+//结果映射
+// 一个ResultMapping实例对应ResultSet中一个字段到javaBean中一个属性的映射关系
 public class ResultMapping {
 
   private Configuration configuration;
@@ -49,6 +51,7 @@ public class ResultMapping {
   ResultMapping() {
   }
 
+  //静态内部类来构建ResultMapping
   public static class Builder {
     private ResultMapping resultMapping = new ResultMapping();
 
@@ -134,6 +137,7 @@ public class ResultMapping {
     
     public ResultMapping build() {
       // lock down collections
+      //返回不可该改变的集合
       resultMapping.flags = Collections.unmodifiableList(resultMapping.flags);
       resultMapping.composites = Collections.unmodifiableList(resultMapping.composites);
       resolveTypeHandler();
@@ -141,6 +145,7 @@ public class ResultMapping {
       return resultMapping;
     }
 
+    //验证逻辑
     private void validate() {
       // Issue #697: cannot define both nestedQueryId and nestedResultMapId
       if (resultMapping.nestedQueryId != null && resultMapping.nestedResultMapId != null) {
@@ -170,6 +175,7 @@ public class ResultMapping {
     }
     
     private void resolveTypeHandler() {
+      //去找一个对应的类处理器
       if (resultMapping.typeHandler == null && resultMapping.javaType != null) {
         Configuration configuration = resultMapping.configuration;
         TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();

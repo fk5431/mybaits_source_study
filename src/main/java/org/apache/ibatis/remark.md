@@ -40,11 +40,11 @@ author : 冯凯
 
 - logging 日志 （✔）
 
-- mapping 配置文件与实体对象的映射功能
+- mapping 配置文件与实体对象的映射功能 （✔）
 
-- parsing 解析 工具包    
+- parsing 解析 工具包     （✔）
 
-- plugin 拦截器功能实现
+- plugin 拦截器功能实现 （✔）
 
 - reflection 反射 （✔）
 
@@ -107,8 +107,9 @@ author : 冯凯
 - mapping
     
     > ParameterMapping 参数映射,存储了一个参数映射的属性 ParameterMode 参数映射的枚举  BoundSql 绑定sql
-    > CacheBuilder 缓存构建器 实现对了对缓存的创建，并且对缓存实例在·进行了装饰
-
+    > CacheBuilder 缓存构建器 实现对了对缓存的创建，并且对缓存实例进行了装饰
+    > mapping中更多是定义了参数映射，结果映射，和绑定的sql的类，可以进行构建，解析应该不是这，之后在回来看一遍
+    
 - binding
 
 - scripting
