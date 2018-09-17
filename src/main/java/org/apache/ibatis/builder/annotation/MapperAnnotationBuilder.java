@@ -89,7 +89,7 @@ public class MapperAnnotationBuilder {
       parseCache();//解析注解 CacheNamespace
       parseCacheRef();//解析CacheNamespaceRef
       Method[] methods = type.getMethods();
-      for (Method method : methods) {
+      for (Method method : methods) {//interface的每一个方法遍历
         try {
           // issue #237
           if (!method.isBridge()) {//如果不是桥接方法 才去解析
@@ -119,6 +119,7 @@ public class MapperAnnotationBuilder {
   }
 
   private void loadXmlResource() {
+    //加载对应interface的xml
     // Spring may not know the real resource name so we check a flag
     // to prevent loading again a resource twice
     // this flag is set at XMLMapperBuilder#bindMapperForNamespace
@@ -248,7 +249,7 @@ public class MapperAnnotationBuilder {
   void parseStatement(Method method) {
     Class<?> parameterTypeClass = getParameterType(method);
     LanguageDriver languageDriver = getLanguageDriver(method);
-    SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
+    SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);//是注解的才在这解析？
     if (sqlSource != null) {
       Options options = method.getAnnotation(Options.class);
       final String mappedStatementId = type.getName() + "." + method.getName();

@@ -111,6 +111,8 @@ author : 冯凯
     > mapping中更多是定义了参数映射，结果映射，和绑定的sql的类，可以进行构建，解析应该不是这，之后在回来看一遍
     
 - binding
+    
+    > 将mapper接口绑定，就是通过代理模式，调用mapper接口中的方法都是经过代理模式中的invoke方法，去执行sql然后返回结果
 
 - scripting
 

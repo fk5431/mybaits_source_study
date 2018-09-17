@@ -15,6 +15,9 @@
  */
 package org.apache.ibatis.binding;
 
+import org.apache.ibatis.reflection.ExceptionUtil;
+import org.apache.ibatis.session.SqlSession;
+
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
@@ -23,13 +26,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
-import org.apache.ibatis.reflection.ExceptionUtil;
-import org.apache.ibatis.session.SqlSession;
-
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+//映射器代理
 public class MapperProxy<T> implements InvocationHandler, Serializable {
 
   private static final long serialVersionUID = -6424540398559729838L;
@@ -45,17 +46,19 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    //所有mapper调用的时候都会调用这个invoke
+    //并不是任何一个方法都需要执行调用代理对象进行执行
     try {
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
-      } else if (isDefaultMethod(method)) {
-        return invokeDefaultMethod(proxy, method, args);
+      } else if (isDefaultMethod(method)) {//interface的public方法
+        return invokeDefaultMethod(proxy, method, args);//呃 没看懂这个方法的代码
       }
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);
     }
-    final MapperMethod mapperMethod = cachedMapperMethod(method);
-    return mapperMethod.execute(sqlSession, args);
+    final MapperMethod mapperMethod = cachedMapperMethod(method);//放到缓存里
+    return mapperMethod.execute(sqlSession, args);//执行返回
   }
 
   private MapperMethod cachedMapperMethod(Method method) {
@@ -80,9 +83,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   /**
    * Backport of java.lang.reflect.Method#isDefault()
    */
+  //如果是public方法，并且这个类是interface
   private boolean isDefaultMethod(Method method) {
-    return (method.getModifiers()
+    return (method.getModifiers()//方法的修饰符
         & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC
         && method.getDeclaringClass().isInterface();
   }
+
 }

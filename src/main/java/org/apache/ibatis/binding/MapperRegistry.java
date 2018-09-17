@@ -31,9 +31,11 @@ import java.util.Set;
  * @author Eduardo Macarron
  * @author Lasse Voss
  */
+//映射器注册机
 public class MapperRegistry {
 
   private final Configuration config;
+  //将已经添加的映射都放入HashMap
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
@@ -72,6 +74,7 @@ public class MapperRegistry {
         parser.parse();
         loadCompleted = true;
       } finally {
+        //加载出现异常然后删除？
         if (!loadCompleted) {
           knownMappers.remove(type);
         }
@@ -90,6 +93,7 @@ public class MapperRegistry {
    * @since 3.2.2
    */
   public void addMappers(String packageName, Class<?> superType) {
+    //查找包下所有是superType的类
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
     Set<Class<? extends Class<?>>> mapperSet = resolverUtil.getClasses();
@@ -101,6 +105,7 @@ public class MapperRegistry {
   /**
    * @since 3.2.2
    */
+  //查找包下所有类
   public void addMappers(String packageName) {
     addMappers(packageName, Object.class);
   }
