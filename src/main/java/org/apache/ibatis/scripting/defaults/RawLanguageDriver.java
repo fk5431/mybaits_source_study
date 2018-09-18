@@ -29,6 +29,7 @@ import org.apache.ibatis.session.Configuration;
  * @since 3.2.0
  * @author Eduardo Macarron
  */
+//直接继承xml语言驱动的实现，返回RawSqlSource
 public class RawLanguageDriver extends XMLLanguageDriver {
 
   @Override

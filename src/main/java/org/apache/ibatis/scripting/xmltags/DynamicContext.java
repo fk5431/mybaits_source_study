@@ -15,20 +15,20 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.OgnlRuntime;
 import ognl.PropertyAccessor;
-
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Clinton Begin
  */
+//动态上下文
 public class DynamicContext {
 
   public static final String PARAMETER_OBJECT_KEY = "_parameter";
@@ -74,6 +74,7 @@ public class DynamicContext {
     return uniqueNumber++;
   }
 
+  //上下文map
   static class ContextMap extends HashMap<String, Object> {
     private static final long serialVersionUID = 2977601501966151582L;
 
@@ -97,7 +98,7 @@ public class DynamicContext {
       return null;
     }
   }
-
+  //上下文访问器
   static class ContextAccessor implements PropertyAccessor {
 
     @Override

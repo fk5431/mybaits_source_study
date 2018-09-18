@@ -15,8 +15,6 @@
  */
 package org.apache.ibatis.scripting.defaults;
 
-import java.util.HashMap;
-
 import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.SqlSource;
@@ -25,6 +23,8 @@ import org.apache.ibatis.scripting.xmltags.DynamicSqlSource;
 import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.session.Configuration;
 
+import java.util.HashMap;
+
 /**
  * Static SqlSource. It is faster than {@link DynamicSqlSource} because mappings are 
  * calculated during startup.
@@ -32,6 +32,7 @@ import org.apache.ibatis.session.Configuration;
  * @since 3.2.0
  * @author Eduardo Macarron
  */
+//原始sql TODO
 public class RawSqlSource implements SqlSource {
 
   private final SqlSource sqlSource;

@@ -21,10 +21,12 @@ import java.util.Map;
 /**
  * @author Frank D. Martinez [mnesarco]
  */
+//语言驱动注册器
 public class LanguageDriverRegistry {
 
   private final Map<Class<? extends LanguageDriver>, LanguageDriver> LANGUAGE_DRIVER_MAP = new HashMap<>();
 
+  //默认的实现
   private Class<? extends LanguageDriver> defaultDriverClass;
 
   public void register(Class<? extends LanguageDriver> cls) {
@@ -62,6 +64,7 @@ public class LanguageDriverRegistry {
     return defaultDriverClass;
   }
 
+  //在configuration中 默认的为 XMLLanguageDriver
   public void setDefaultDriverClass(Class<? extends LanguageDriver> defaultDriverClass) {
     register(defaultDriverClass);
     this.defaultDriverClass = defaultDriverClass;

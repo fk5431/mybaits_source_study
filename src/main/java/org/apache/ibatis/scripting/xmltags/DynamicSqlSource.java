@@ -15,16 +15,17 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.Map;
-
 import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.Configuration;
 
+import java.util.Map;
+
 /**
  * @author Clinton Begin
  */
+//动态sql
 public class DynamicSqlSource implements SqlSource {
 
   private final Configuration configuration;
@@ -36,11 +37,14 @@ public class DynamicSqlSource implements SqlSource {
   }
 
   @Override
+  //得到绑定的sql
   public BoundSql getBoundSql(Object parameterObject) {
     DynamicContext context = new DynamicContext(configuration, parameterObject);
     rootSqlNode.apply(context);
     SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
     Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
+    //这返回的是StaticSqlSource,解析完了就把那些参数都替换成?了，也就是最基本的JDBC的SQL写法
+    //替换#{}中间的部分
     SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     for (Map.Entry<String, Object> entry : context.getBindings().entrySet()) {
