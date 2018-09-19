@@ -121,6 +121,8 @@ author : 冯凯
 - executor
 
 - cursor
+    
+    > cursor里面东西很少，就是封装了下，使用游标的方式去读数据
 
 - transaction
 

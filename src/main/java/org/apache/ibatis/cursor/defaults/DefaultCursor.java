@@ -49,25 +49,25 @@ public class DefaultCursor<T> implements Cursor<T> {
 
     private CursorStatus status = CursorStatus.CREATED;
     private int indexWithRowBound = -1;
-
+    //枚举游标的状态
     private enum CursorStatus {
 
         /**
          * A freshly created cursor, database ResultSet consuming has not started
          */
-        CREATED,
+        CREATED,//新创建的
         /**
          * A cursor currently in use, database ResultSet consuming has started
          */
-        OPEN,
+        OPEN,//正在使用的
         /**
          * A closed cursor, not fully consumed
          */
-        CLOSED,
+        CLOSED,//关闭
         /**
          * A fully consumed cursor, a consumed cursor is always closed
          */
-        CONSUMED
+        CONSUMED//用完了的，用完的总是关闭的
     }
 
     public DefaultCursor(DefaultResultSetHandler resultSetHandler, ResultMap resultMap, ResultSetWrapper rsw, RowBounds rowBounds) {
@@ -93,6 +93,7 @@ public class DefaultCursor<T> implements Cursor<T> {
     }
 
     @Override
+    //只能有一个游标操作
     public Iterator<T> iterator() {
         if (iteratorRetrieved) {
             throw new IllegalStateException("Cannot open more than one iterator on a Cursor");
@@ -102,6 +103,7 @@ public class DefaultCursor<T> implements Cursor<T> {
     }
 
     @Override
+    //将 ResultSet 和 Statment关闭
     public void close() {
         if (isClosed()) {
             return;
@@ -125,7 +127,7 @@ public class DefaultCursor<T> implements Cursor<T> {
 
     protected T fetchNextUsingRowBound() {
         T result = fetchNextObjectFromDatabase();
-        while (result != null && indexWithRowBound < rowBounds.getOffset()) {
+        while (result != null && indexWithRowBound < rowBounds.getOffset()) {//索引位置不能小于 分页的开始位置
             result = fetchNextObjectFromDatabase();
         }
         return result;
@@ -148,6 +150,7 @@ public class DefaultCursor<T> implements Cursor<T> {
             indexWithRowBound++;
         }
         // No more object or limit reached
+        //没有更多的数据了 或者已经读够了
         if (next == null || getReadItemsCount() == rowBounds.getOffset() + rowBounds.getLimit()) {
             close();
             status = CursorStatus.CONSUMED;
@@ -165,6 +168,7 @@ public class DefaultCursor<T> implements Cursor<T> {
         return indexWithRowBound + 1;
     }
 
+    //得到结果结果之后停止
     private static class ObjectWrapperResultHandler<T> implements ResultHandler<T> {
 
         private T result;
@@ -214,6 +218,7 @@ public class DefaultCursor<T> implements Cursor<T> {
         }
 
         @Override
+        //不能删除
         public void remove() {
             throw new UnsupportedOperationException("Cannot remove element from Cursor");
         }
