@@ -29,12 +29,14 @@ public class LanguageDriverRegistry {
   //默认的实现
   private Class<? extends LanguageDriver> defaultDriverClass;
 
+  //通过class来注册
   public void register(Class<? extends LanguageDriver> cls) {
     if (cls == null) {
       throw new IllegalArgumentException("null is not a valid Language Driver");
     }
     if (!LANGUAGE_DRIVER_MAP.containsKey(cls)) {
       try {
+        //没注册过就注册下
         LANGUAGE_DRIVER_MAP.put(cls, cls.newInstance());
       } catch (Exception ex) {
         throw new ScriptingException("Failed to load language driver for " + cls.getName(), ex);
@@ -42,6 +44,7 @@ public class LanguageDriverRegistry {
     }
   }
 
+  //通过实例来注册
   public void register(LanguageDriver instance) {
     if (instance == null) {
       throw new IllegalArgumentException("null is not a valid Language Driver");

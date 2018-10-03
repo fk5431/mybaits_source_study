@@ -32,7 +32,7 @@ import java.util.HashMap;
  * @since 3.2.0
  * @author Eduardo Macarron
  */
-//原始sql TODO
+//原始sql
 public class RawSqlSource implements SqlSource {
 
   private final SqlSource sqlSource;
@@ -45,6 +45,7 @@ public class RawSqlSource implements SqlSource {
     SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
     Class<?> clazz = parameterType == null ? Object.class : parameterType;
     sqlSource = sqlSourceParser.parse(sql, clazz, new HashMap<String, Object>());
+    //sqlSource is StaticSqlSource
   }
 
   private static String getSql(Configuration configuration, SqlNode rootSqlNode) {
